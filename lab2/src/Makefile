@@ -2,23 +2,34 @@ CC = clang
 CFLAGS = -Wall -Werror -Wextra -std=c11 -g -fopenmp
 LDFLAGS = -fopenmp
 
-SOURCES := array1.c
+LABSOURCES := lab_work.c
+HWSOURCES := home_work.c
 BUILDDIR := ./build
-OBJECTIVES := $(BUILDDIR)/$(SOURCES:.c=.o)
-TARGET = program
 
+LABOBJECTIVES := $(BUILDDIR)/$(LABSOURCES:.c=.o)
+HWOBJECTIVES := $(BUILDDIR)/$(HWSOURCES:.c=.o)
 
-all: clear $(TARGET)
+LABTARGET = lab_program
+HWTARGET = hw_program
+
+all: clear $(LABTARGET) $(HWTARGET)
 
 $(BUILDDIR):
 	mkdir -p $(BUILDDIR)
 
-$(TARGET): $(OBJECTIVES)
+$(LABTARGET): $(LABOBJECTIVES)
 	$(CC) $(LDFLAGS) $< -o $@
 
-$(OBJECTIVES): $(SOURCES) | $(BUILDDIR)
-	$(CC) $(CFLAGS) -c $< -o $@
+$(LABOBJECTIVES): $(LABSOURCES) | $(BUILDDIR)
+	$(CC) $(CFLAGS) -O2 -c $< -o $@
+
+$(HWTARGET): $(HWOBJECTIVES)
+	$(CC) $(LDFLAGS) $< -o $@
+
+$(HWOBJECTIVES): $(HWSOURCES) | $(BUILDDIR)
+	$(CC) $(CFLAGS) -O2 -c $< -o $@
 
 clear:
 	rm -rf $(BUILDDIR)
-	rm -f $(TARGET)
+	rm -f $(LABTARGET)
+	rm -f $(HWTARGET)
