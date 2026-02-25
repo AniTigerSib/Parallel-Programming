@@ -3,7 +3,7 @@
 #include <time.h>
 #include <omp.h>
 
-#define N 40000
+#define N 20000
 
 int a[N][N];
 
