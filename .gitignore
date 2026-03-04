@@ -1,0 +1,38 @@
+# Compiled objects
+*.o
+*.obj
+*.out
+
+# Executables
+*.exe
+*.a
+*.so
+*.dll
+*.dylib
+
+# CMake
+CMakeFiles/
+CMakeCache.txt
+cmake_install.cmake
+# Makefile
+*.cmake
+
+# Build directories
+build/
+dist/
+bin/
+lib/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Dependencies
+*.d

@@ -4,7 +4,7 @@
 #include <omp.h>
 
 #define N 20000
-#define sched static, N/omp_get_max_threads()
+#define sched guided, 2
 
 int a[N][N];
 
@@ -248,5 +248,8 @@ int main()
   printf("Dynamic parallel run - collapse parallel:\n");
   run_parallel_dynamic_collapse(matrix);
 
+#ifdef _WIN32
+  system("pause");
+#endif
   return 0;
 }
