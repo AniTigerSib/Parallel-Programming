@@ -9,7 +9,6 @@
 #include <cmath>
 #include <ctime>
 #include <omp.h>
-#include "locale.h"
 
 using namespace std;
 
@@ -28,7 +27,7 @@ int main(int argc, char **argv)
 	f = new_arr(N);      // Выделение памяти под правую часть значений уравнения
 	u = new_arr(N + 2);  // Выделение памяти под неизвестные и краевые условия
 
-	//  Последовательная реализация
+	// //  Последовательная реализация
 
 	cout << "\n\t*** Serial version ***\n";
 	Init(u, f, N);                  // Инициализация краевых условий и правой части уравнения
@@ -62,7 +61,7 @@ int main(int argc, char **argv)
 		f3 = new_arr(N);
 		u3 = new_arr(N + 2);
 
-		omp_set_num_threads(8);
+		omp_set_num_threads(i);
 		cout << "\n\t*** Parallel version ***\n";
 		Init(u3, f3, N);                  // Инициализация краевых условий и правой части
 		start = chrono::high_resolution_clock::now();

@@ -101,67 +101,24 @@ int Calc_par(double** u, double** f, int N, double eps, const int BlockSize)
 	{
 		icnt++;
 		max = 0.0;
-		
-        {
-            for (int diag = 0; diag < 2 * bcnt - 1; diag++) {
-                #pragma omp parallel for shared(u, f, diag, diag_blocks) schedule(guided) reduction(max:max)
-                for (int block_idx = 0; block_idx < diag_blocks[diag].size(); block_idx++) {
-                    auto [bl_row, bl_col] = diag_blocks[diag][block_idx];
-                    for (int i = 1 + bl_row * BlockSize; i <= (bl_row + 1) * BlockSize; i++) {
-                        for (int j = 1 + bl_col * BlockSize; j <= (bl_col + 1) * BlockSize; j++) {
-                            double u0 = u[i][j];
-                            u[i][j] = 0.25 * (u[i - 1][j] + u[i + 1][j]     // Расчет по формуле Гаусса-Зейделя
-                                    + u[i][j - 1] + u[i][j + 1] - h * h * f[i - 1][j - 1]);
-                            double d = fabs(u[i][j] - u0);      // Разность нового значения неизвестной и значения с предыдущей итерации
-                            if (d > max)
-                                max = d;
-                        }
+
+        for (int diag = 0; diag < 2 * bcnt - 1; diag++) {
+            #pragma omp parallel for shared(u, f, diag, diag_blocks) schedule(guided) reduction(max:max)
+            for (int block_idx = 0; block_idx < diag_blocks[diag].size(); block_idx++) {
+                auto [bl_row, bl_col] = diag_blocks[diag][block_idx];
+                for (int i = 1 + bl_row * BlockSize; i <= (bl_row + 1) * BlockSize; i++) {
+                    for (int j = 1 + bl_col * BlockSize; j <= (bl_col + 1) * BlockSize; j++) {
+                        double u0 = u[i][j];
+                        u[i][j] = 0.25 * (u[i - 1][j] + u[i + 1][j]     // Расчет по формуле Гаусса-Зейделя
+                                + u[i][j - 1] + u[i][j + 1] - h * h * f[i - 1][j - 1]);
+                        double d = fabs(u[i][j] - u0);      // Разность нового значения неизвестной и значения с предыдущей итерации
+                        if (d > max)
+                            max = d;
                     }
                 }
-                #pragma omp barrier
             }
+            #pragma omp barrier
         }
-        // {
-        //     for (int diag = 0; diag < bcnt; diag++) {
-        //         #pragma omp for schedule(guided) reduction(max:max)
-        //         for (int i = 0; i < diag; i++) {
-        //             const int min_row = 1 + (diag - i) * BlockSize;
-        //             const int min_col = 1 + i * BlockSize;
-        //             const int max_row = min_row + BlockSize - 1;
-        //             const int max_col = min_col + BlockSize - 1;
-        //             for (int row = min_row; row <= max_row; row++) {
-        //                 for (int col = min_col; col < max_col; col++) {
-        //                     double u0 = u[row][col];
-        //                     u[row][col] = 0.25 * (u[row - 1][col] + u[row + 1][col]     // Расчет по формуле Гаусса-Зейделя
-        //                             + u[row][col - 1] + u[row][col + 1] - h * h * f[row - 1][col - 1]);
-        //                     double d = fabs(u[row][col] - u0); // Разность нового значения неизвестной и значения с предыдущей итерации
-        //                     if (d > max)
-        //                         max = d;
-        //                 }
-        //             }
-        //         }
-        //     }
-
-        //     for (int diag = 0; diag < bcnt - 1; diag++) {
-        //         #pragma omp for schedule(guided) reduction(max:max)
-        //         for (int i = 0; i < diag; i++) {
-        //             const int min_row = 1 + (bcnt - 1 - i) * BlockSize;
-        //             const int min_col = 1 + (i + 1) * BlockSize;
-        //             const int max_row = min_row + BlockSize - 1;
-        //             const int max_col = min_col + BlockSize - 1;
-        //             for (int row = min_row; row <= max_row; row++) {
-        //                 for (int col = min_col; col < max_col; col++) {
-        //                     double u0 = u[row][col];
-        //                     u[row][col] = 0.25 * (u[row - 1][col] + u[row + 1][col] // Расчет по формуле Гаусса-Зейделя
-        //                             + u[row][col - 1] + u[row][col + 1] - h * h * f[row - 1][col - 1]);
-        //                     double d = fabs(u[row][col] - u0); // Разность нового значения неизвестной и значения с предыдущей итерации
-        //                     if (d > max)
-        //                         max = d;
-        //                 }
-        //             }
-        //         }
-        //     }
-        // }
 	}
     while (max > eps);
 	
