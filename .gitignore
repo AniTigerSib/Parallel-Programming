@@ -37,4 +37,4 @@ Thumbs.db
 # Dependencies
 *.d
 
-/.cache/
+.cache/
